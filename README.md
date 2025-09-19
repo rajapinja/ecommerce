@@ -18,6 +18,9 @@ Monitoring:
 Scripts available (Node.js & Python) to query config.chunks and show live chunk → shard distribution.
 Mongo Express configured via Docker for admin/monitoring UI.
 
+Mongo Express is fine for document-level inspection and CRUD.
+But for cluster-level monitoring (config servers, shard distribution, chunks) you’ll need mongosh commands or custom monitoring scripts.
+
 ✅ Why Sharding?
 As customer and order volume grows, sharding horizontally scales the database, avoids single-node bottlenecks, and ensures queries remain performant.
 
