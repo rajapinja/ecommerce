@@ -1,0 +1,96 @@
+version: "3.8"
+
+services:
+  # ------------------------
+  # Config Servers
+  # ------------------------
+  configsvr1:
+    image: mongo:7
+    command: mongod --configsvr --replSet configReplSet --port 27019
+    volumes:
+      - ./data/config1:/data/db
+    ports:
+      - "27019:27019"
+
+  configsvr2:
+    image: mongo:7
+    command: mongod --configsvr --replSet configReplSet --port 27020
+    volumes:
+      - ./data/config2:/data/db
+    ports:
+      - "27020:27020"
+
+  configsvr3:
+    image: mongo:7
+    command: mongod --configsvr --replSet configReplSet --port 27021
+    volumes:
+      - ./data/config3:/data/db
+    ports:
+      - "27021:27021"
+
+  # ------------------------
+  # Shards
+  # ------------------------
+  shard1:
+    image: mongo:7
+    command: mongod --shardsvr --replSet shard1 --port 27030
+    volumes:
+      - ./data/shard1:/data/db
+    ports:
+      - "27030:27030"
+
+  shard2:
+    image: mongo:7
+    command: mongod --shardsvr --replSet shard2 --port 27031
+    volumes:
+      - ./data/shard2:/data/db
+    ports:
+      - "27031:27031"
+
+  shard3:
+    image: mongo:7
+    command: mongod --shardsvr --replSet shard3 --port 27032
+    volumes:
+      - ./data/shard3:/data/db
+    ports:
+      - "27032:27032"
+
+  # ------------------------
+  # Mongos Router
+  # ------------------------
+  mongos:
+    image: mongo:7
+    command: mongos --configdb configReplSet/configsvr1:27019,configsvr2:27020,configsvr3:27021 --bind_ip_all --port 27017
+    depends_on:
+      - configsvr1
+      - configsvr2
+      - configsvr3
+      - shard1
+      - shard2
+      - shard3
+    ports:
+      - "27017:27017"
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    depends_on:
+      - mongos
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongos        # point to mongos router
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true" # admin mode to see all DBs
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+
+
+# Add a one-time init container: so that initializes configserver replicaset, and shards
+  mongo-init:
+    image: mongo:7
+    depends_on:
+      - mongos
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    entrypoint: [ "mongosh", "--host", "mongos:27017", "/docker-entrypoint-initdb.d/init-mongo.js" ]

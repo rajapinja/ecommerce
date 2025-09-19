@@ -1,0 +1,9 @@
+cls
+})
+  members: [ { _id: 0, host: "shard1:27030" } ]
+  _id: "shard1",
+rs.initiate({
+});
+  members: [ { _id: 0, host: "shard1:27030" } ]
+  _id: "shard1",
+rs.initiate({

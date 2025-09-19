@@ -1,0 +1,35 @@
+server:
+  port: 9395
+
+spring:
+  application:
+    name: ecommerce
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ecommerce
+      auto-index-creation: true
+      # uri: mongodb://mongos1:27017,mongos2:27017/ecommerce?maxPoolSize=100
+      # If you deploy multiple mongos, list them:
+      # uri: mongodb://mongos1:27017,mongos2:27017,ecommerce?replicaSet=configReplSet
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+      livenessState:
+        enabled: true
+      readinessState:
+        enabled: true
+    info:
+      enabled: true
+
+info:
+  app:
+    name: Ecommerce Backend
+    description: MongoDB sharded cluster with Docker Compose Application
+    version: 0.0.1-SNAPSHOT
