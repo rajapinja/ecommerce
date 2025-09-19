@@ -18,6 +18,12 @@ Monitoring:
 Scripts available (Node.js & Python) to query config.chunks and show live chunk → shard distribution.
 Mongo Express configured via Docker for admin/monitoring UI.
 
+If you want true visibility into shards, chunks, and balancer activity:
+Mongosh → Run commands like sh.status(), db.printShardingStatus(), db.getSiblingDB("config").chunks.find().pretty().
+MongoDB Atlas UI (if using Atlas) → has visual shard/chunk monitoring.
+Ops Manager / Cloud Manager → full monitoring suite.
+Custom Scripts → your Node.js/Python chunk map tools (from earlier).
+
 Mongo Express is fine for document-level inspection and CRUD.
 But for cluster-level monitoring (config servers, shard distribution, chunks) you’ll need mongosh commands or custom monitoring scripts.
 
